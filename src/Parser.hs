@@ -44,27 +44,8 @@ lis = makeTokenParser
 ----------------------------------
 --- Parser de expressiones enteras
 -----------------------------------
-mulop:: Parser (Exp Int -> Exp Int -> Exp Int)
-mulop = try (do { reservedOp lis "*"; return (Times)})
-        <|> (do {reservedOp lis "/"; return (Div)})
-
-addop:: Parser (Exp Int -> Exp Int -> Exp Int)
-addop = try (do { reservedOp lis "+"; return (Plus)})
-        <|> (do {reservedOp lis "-"; return (Minus)})
-
-intfactor :: Parser (Exp Int)
-intfactor = try (do {n <- natural lis; return (Const (fromInteger n))})
-            <|> try (do {v <- identifier lis; return (Var v)})
-                <|> try (do {reservedOp lis "-"; f <- intfactor; return (UMinus f)})
-                    <|> parens lis intseq
-
-
-
-intterm :: Parser (Exp Int)
-intterm = chainl1 intfactor mulop
-
-intexp :: Parser (Exp Int)
-intexp = chainl1 intterm addop
+intseq :: Parser (Exp Int)
+intseq = chainl1 intassgn (do {reservedOp lis ","; return (ESeq)})
 
 intassgn :: Parser (Exp Int)
 intassgn = try (do  v <- identifier lis
@@ -73,8 +54,25 @@ intassgn = try (do  v <- identifier lis
                     return (EAssgn v exp))
            <|> intexp
 
-intseq :: Parser (Exp Int)
-intseq = chainl1 intassgn (do {reservedOp lis ","; return (ESeq)})
+intexp :: Parser (Exp Int)
+intexp = chainl1 intterm addOp
+
+intterm :: Parser (Exp Int)
+intterm = chainl1 intfactor mulOp
+
+intfactor :: Parser (Exp Int)
+intfactor = try (do {n <- natural lis; return (Const (fromInteger n))})
+            <|> try (do {v <- identifier lis; return (Var v)})
+                <|> try (do {reservedOp lis "-"; f <- intfactor; return (UMinus f)})
+                    <|> parens lis intseq
+
+mulOp:: Parser (Exp Int -> Exp Int -> Exp Int)
+mulOp = try (do { reservedOp lis "*"; return (Times)})
+        <|> (do {reservedOp lis "/"; return (Div)})
+
+addOp:: Parser (Exp Int -> Exp Int -> Exp Int)
+addOp = try (do { reservedOp lis "+"; return (Plus)})
+        <|> (do {reservedOp lis "-"; return (Minus)})
 
 -----------------------------------
 --- Parser de expressiones booleanas
