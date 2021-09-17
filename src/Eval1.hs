@@ -14,17 +14,17 @@ type State = M.Map Variable Int
 -- Estado nulo
 -- Completar la definición
 initState :: State
-initState = undefined
+initState = M.empty 
 
 -- Busca el valor de una variable en un estado
 -- Completar la definición
 lookfor :: Variable -> State -> Int
-lookfor v s = undefined
+lookfor v s = s M.! v
 
 -- Cambia el valor de una variable en un estado
 -- Completar la definición
 update :: Variable -> Int -> State -> State
-update = undefined
+update = M.insert
 
 -- Evalua un programa en el estado nulo
 eval :: Comm -> State
@@ -40,8 +40,10 @@ stepCommStar c    s = Data.Strict.Tuple.uncurry stepCommStar $ stepComm c s
 -- Completar la definición
 stepComm :: Comm -> State -> Pair Comm State
 stepComm = undefined
+-- Aca hay que hacer pattern matching con Comm
 
 -- Evalua una expresion
 -- Completar la definición
 evalExp :: Exp a -> State -> Pair a State
 evalExp = undefined
+-- Aca hay que hacer pattern matching con Exp Int e Exp Bool
