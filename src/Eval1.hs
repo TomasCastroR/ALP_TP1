@@ -39,8 +39,17 @@ stepCommStar c    s = Data.Strict.Tuple.uncurry stepCommStar $ stepComm c s
 -- Evalua un paso de un comando en un estado dado
 -- Completar la definición
 stepComm :: Comm -> State -> Pair Comm State
-stepComm = undefined
--- Aca hay que hacer pattern matching con Comm
+stepComm Skip s = (Skip :!: s)
+stepComm (Let var exp) s = let (n :!: s') = evalExp exp s
+                           in (Skip :!: update var n s')
+stepComm (Seq Skip c) s = (c :!: s)
+stepComm (Seq com1 com2) s = let (com :!: s') = stepComm com1 s
+                             in (Seq com com2 :!: s')
+stepComm (IfThenElse bexp c1 c2) s = let (b :!: s') = evalExp bexp s
+                                     in if b then (c1 :!: s') else (c2 :!: s')
+stepComm loop@(Repeat c bexp) s = let (b :!: s') = evalExp bexp s
+                                  in if b then (Skip :!: s')
+                                          else ((Seq c loop) :!: s')
 
 -- Evalua una expresion
 -- Completar la definición
