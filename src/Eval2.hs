@@ -14,7 +14,7 @@ type State = M.Map Variable Int
 -- Estado nulo
 -- Completar la definición
 initState :: State
-initState = undefined
+initState = M.empty
 
 -- Busca el valor de una variable en un estado
 -- Completar la definición
@@ -24,7 +24,7 @@ lookfor v s = undefined
 -- Cambia el valor de una variable en un estado
 -- Completar la definición
 update :: Variable -> Int -> State -> State
-update = undefined
+update = M.insert
 
 -- Evalua un programa en el estado nulo
 eval :: Comm -> Either Error State
