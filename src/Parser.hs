@@ -117,7 +117,7 @@ commin = try (do {reserved lis "skip"; return Skip})
                           return (IfThenElse b c1 c2)})
                  <|> try (do {reserved lis "if"; b <- boolexp; reserved lis "then";
                               c <- braces lis comm; return (IfThen b c)})
-                     <|>  do {reserved lis "repeat"; c <- comm;
+                     <|>  do {reserved lis "repeat"; c <- braces lis comm;
                               reserved lis "until"; b <- boolexp;
                               return (Repeat c b)}
 
