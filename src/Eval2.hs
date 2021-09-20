@@ -50,10 +50,7 @@ stepComm (IfThenElse bexp c1 c2) s  = case evalExp bexp s of
                                         Right (b :!: s') -> if b then Right (c1 :!: s')
                                                                  else Right (c2 :!: s')
                                         Left error -> Left error
-stepComm loop@(Repeat c bexp) s     = case evalExp bexp s of
-                                        Right (b :!: s') -> if b then Right (Skip :!: s')
-                                                                  else Right ((Seq c loop) :!: s')
-                                        Left error -> Left error
+stepComm loop@(Repeat c bexp) s     = Right ((Seq c (IfThenElse bexp Skip loop)) :!: s)
 
 -- Evalua una expresion
 evalExp :: Exp a -> State -> Either Error (Pair a State)

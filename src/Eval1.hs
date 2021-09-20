@@ -43,9 +43,7 @@ stepComm (Seq com1 com2) s = let (com :!: s') = stepComm com1 s
                              in (Seq com com2 :!: s')
 stepComm (IfThenElse bexp c1 c2) s = let (b :!: s') = evalExp bexp s
                                      in if b then (c1 :!: s') else (c2 :!: s')
-stepComm loop@(Repeat c bexp) s = let (b :!: s') = evalExp bexp s
-                                  in if b then (Skip :!: s')
-                                          else ((Seq c loop) :!: s')
+stepComm loop@(Repeat c bexp) s = ((Seq c (IfThenElse bexp Skip loop)) :!: s)
 
 -- Evalua una expresion
 evalExp :: Exp a -> State -> Pair a State

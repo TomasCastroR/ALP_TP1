@@ -45,7 +45,7 @@ stepCommStar c    s = do (c' :!: s') <- stepComm c s
 stepComm :: Comm -> State -> Either Error (Pair Comm State)
 stepComm Skip s                     = Right (Skip :!: s)
 stepComm (Let var exp) s            = case evalExp exp s of
-                                        Right (n :!: s') -> let newComm = "Let " ++ " " ++ var ++ " " ++ show n ++ "\n"
+                                        Right (n :!: s') -> let newComm = "Let " ++ var ++ " " ++ show n ++ "; "
                                                                 s'' = addTrace newComm s'
                                                             in Right (Skip :!: update var n s'')                                                                               
                                         Left error -> Left error
@@ -57,10 +57,7 @@ stepComm (IfThenElse bexp c1 c2) s  = case evalExp bexp s of
                                         Right (b :!: s') -> if b then Right (c1 :!: s')
                                                                  else Right (c2 :!: s')
                                         Left error -> Left error
-stepComm loop@(Repeat c bexp) s     = case evalExp bexp s of
-                                        Right (b :!: s') -> if b then Right (Skip :!: s')
-                                                                  else Right ((Seq c loop) :!: s')
-                                        Left error -> Left error
+stepComm loop@(Repeat c bexp) s     = Right ((Seq c (IfThenElse bexp Skip loop)) :!: s)
 
 -- Evalua una expresion
 evalExp :: Exp a -> State -> Either Error (Pair a State)
