@@ -17,9 +17,9 @@ initState = (M.empty, "")
 
 -- Busca el valor de una variable en un estado
 lookfor :: Variable -> State -> Either Error Int
-lookfor v s = case (fst s) M.!? v of
-                  Just n -> Right n
-                  _ -> Left UndefVar
+lookfor v (map, _) = case map M.!? v of
+                        Just n -> Right n
+                        _ -> Left UndefVar
 
 -- Cambia el valor de una variable en un estado
 update :: Variable -> Int -> State -> State
@@ -45,10 +45,9 @@ stepCommStar c    s = do (c' :!: s') <- stepComm c s
 stepComm :: Comm -> State -> Either Error (Pair Comm State)
 stepComm Skip s                     = Right (Skip :!: s)
 stepComm (Let var exp) s            = case evalExp exp s of
-                                        Right (n :!: s') -> 
-                                          newComm = "Let " ++ var ++ show n ++ "\n"
-                                          s'' = addTrace newComm s'
-                                          Right (Skip :!: update var n s'')                                          
+                                        Right (n :!: s') -> let newComm = "Let " ++ " " ++ var ++ " " ++ show n ++ "\n"
+                                                                s'' = addTrace newComm s'
+                                                            in Right (Skip :!: update var n s'')                                                                               
                                         Left error -> Left error
 stepComm (Seq Skip c) s             = Right (c :!: s)
 stepComm (Seq com1 com2) s          = case stepComm com1 s of
