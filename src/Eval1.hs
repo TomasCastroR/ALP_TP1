@@ -51,7 +51,7 @@ stepComm loop@(Repeat c bexp) s = let (b :!: s') = evalExp bexp s
 evalExp :: Exp a -> State -> Pair a State
 evalExp (Const n) s = (n :!: s)
 evalExp (Var v) s = (lookfor v s :!: s)
-evalExp (UMinus exp) s = let (n :!: s) = evalExp exp s in (-n :!: s)
+evalExp (UMinus exp) s = let (n :!: s') = evalExp exp s in (-n :!: s')
 evalExp (Plus exp1 exp2) s = let (n1 :!: s') = evalExp exp1 s
                                  (n2 :!: s'') = evalExp exp2 s'
                              in (n1 + n2 :!: s'')
