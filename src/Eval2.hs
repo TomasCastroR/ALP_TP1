@@ -65,38 +65,38 @@ evalExp (UMinus exp) s      =  case evalExp exp s of
                                 Right (n :!: s') -> Right (-n :!: s')
                                 Left error -> Left error
 evalExp (Plus exp1 exp2) s  = case evalExp exp1 s of
-                                  Right (n1 :!: s') -> 
-                                    case evalExp exp2 s' of
-                                        Right (n2 :!: s'') -> Right (n1 + n2 :!: s'')
-                                        Left error -> Left error
-                                  Left error -> Left error
-evalExp (Minus exp1 exp2) s = case evalExp exp1 s of
-                                  Right (n1 :!: s') -> 
-                                    case evalExp exp2 s' of
-                                        Right (n2 :!: s'') -> Right (n1 - n2 :!: s'')
-                                        Left error -> Left error
-                                  Left error -> Left error
-evalExp (Times exp1 exp2) s = case evalExp exp1 s of
-                                    Right (n1 :!: s') -> 
-                                      case evalExp exp2 s' of
-                                        Right (n2 :!: s'') -> Right (n1 * n2 :!: s'')
-                                        Left error -> Left error
-                                    Left error -> Left error
-evalExp (Div exp1 exp2) s   = case evalExp exp1 s of
-                                  Right (n1 :!: s') -> 
-                                    case evalExp exp2 s' of
-                                      Right (n2 :!: s'') -> 
-                                        case n2 of
-                                          0 -> Left DivByZero
-                                          _ -> Right (div n1 n2 :!: s'')
+                                Right (n1 :!: s') -> 
+                                  case evalExp exp2 s' of
+                                      Right (n2 :!: s'') -> Right (n1 + n2 :!: s'')
                                       Left error -> Left error
-                                  Left error -> Left error
+                                Left error -> Left error
+evalExp (Minus exp1 exp2) s = case evalExp exp1 s of
+                                Right (n1 :!: s') -> 
+                                  case evalExp exp2 s' of
+                                    Right (n2 :!: s'') -> Right (n1 - n2 :!: s'')
+                                    Left error -> Left error
+                                Left error -> Left error
+evalExp (Times exp1 exp2) s = case evalExp exp1 s of
+                                Right (n1 :!: s') -> 
+                                  case evalExp exp2 s' of
+                                    Right (n2 :!: s'') -> Right (n1 * n2 :!: s'')
+                                    Left error -> Left error
+                                Left error -> Left error
+evalExp (Div exp1 exp2) s   = case evalExp exp1 s of
+                                Right (n1 :!: s') -> 
+                                  case evalExp exp2 s' of
+                                    Right (n2 :!: s'') -> 
+                                      case n2 of
+                                        0 -> Left DivByZero
+                                        _ -> Right (div n1 n2 :!: s'')
+                                    Left error -> Left error
+                                Left error -> Left error
 evalExp (EAssgn var exp) s  = case evalExp exp s of
                                 Right (n :!: s') -> Right (n :!: update var n s')
                                 Left error -> Left error
 evalExp (ESeq exp1 exp2) s  = case evalExp exp1 s of
-                                  Right (_ :!: s') -> evalExp exp2 s'
-                                  Left error -> Left error
+                                Right (_ :!: s') -> evalExp exp2 s'
+                                Left error -> Left error
 
 evalExp BTrue s           = Right (True :!: s)
 evalExp BFalse s          = Right (False :!: s)
