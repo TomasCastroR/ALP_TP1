@@ -23,7 +23,8 @@ lookfor v (map, _) = case map M.!? v of
 
 -- Cambia el valor de una variable en un estado
 update :: Variable -> Int -> State -> State
-update v x (map, t) = (M.insert v x map, t)
+update v x (map, t) = let newTrace = "Let " ++ v ++ " " ++ show x ++ "; "
+                      in addTrace newTrace (M.insert v x map, t)
 
 -- Agrega una traza dada al estado
 addTrace :: String -> State -> State
@@ -45,9 +46,7 @@ stepCommStar c    s = do (c' :!: s') <- stepComm c s
 stepComm :: Comm -> State -> Either Error (Pair Comm State)
 stepComm Skip s                     = Right (Skip :!: s)
 stepComm (Let var exp) s            = case evalExp exp s of
-                                        Right (n :!: s') -> let newComm = "Let " ++ var ++ " " ++ show n ++ "; "
-                                                                s'' = addTrace newComm s'
-                                                            in Right (Skip :!: update var n s'')                                                                               
+                                        Right (n :!: s') -> Right (Skip :!: update var n s')                                                                               
                                         Left error -> Left error
 stepComm (Seq Skip c) s             = Right (c :!: s)
 stepComm (Seq com1 com2) s          = case stepComm com1 s of
