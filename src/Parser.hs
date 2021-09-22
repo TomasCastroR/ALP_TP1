@@ -104,20 +104,20 @@ boolterm = try (do {reserved lis "true"; return BTrue})
 --- Parser de comandos
 -----------------------------------
 
-comm :: Parser Comm
-comm = chainl1 commin (do {reservedOp lis ";"; return Seq})
+commseq :: Parser Comm
+commseq = chainl1 comm (do {reservedOp lis ";"; return Seq})
 
-commin :: Parser Comm
-commin = try (do {reserved lis "skip"; return Skip})
+comm :: Parser Comm
+comm = try (do {reserved lis "skip"; return Skip})
          <|> try (do {v <- identifier lis;
                       reservedOp lis "="; exp <- intseq;
                       return (Let v exp)})
              <|> try (do {reserved lis "if"; b <- boolexp; reserved lis "then";
-                          c1 <- braces lis comm; reserved lis "else"; c2 <- braces lis comm;
+                          c1 <- braces lis commseq; reserved lis "else"; c2 <- braces lis commseq;
                           return (IfThenElse b c1 c2)})
                  <|> try (do {reserved lis "if"; b <- boolexp; reserved lis "then";
-                              c <- braces lis comm; return (IfThen b c)})
-                     <|>  do {reserved lis "repeat"; c <- braces lis comm;
+                              c <- braces lis commseq; return (IfThen b c)})
+                     <|>  do {reserved lis "repeat"; c <- braces lis commseq;
                               reserved lis "until"; b <- boolexp;
                               return (Repeat c b)}
 
@@ -125,4 +125,4 @@ commin = try (do {reserved lis "skip"; return Skip})
 -- Función de parseo
 ------------------------------------
 parseComm :: SourceName -> String -> Either ParseError Comm
-parseComm = parse (totParser comm)
+parseComm = parse (totParser commseq)
